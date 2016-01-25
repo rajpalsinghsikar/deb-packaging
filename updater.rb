@@ -80,6 +80,14 @@ def generate_control(app)
 end
 
 def generate_changelog(app)
+  contents = <<-FILE
+    #{app} (1.0-1) UNRELEASED; urgency=low
+
+     * Initial release. (Closes: #XXXXXX)
+
+    -- Balaswecha Team <balaswecha-dev-team@thoughtworks.com>  #{Time.now.strftime '%a, %-d %b %Y %H:%M:%S %z'}
+  FILE
+  File.write('changelog', contents)
 end
 
 def generate_compat(app)
@@ -91,6 +99,7 @@ def generate_deb(app)
   generate_deb_files(app)
 end
 
+#apps = apps.take(1)
 apps.each do |app|
   generate_deb(app)
 end
