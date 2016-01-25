@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'fileutils'
+
 BASE_URL="http://phet.colorado.edu/sims/html/"
 apps = [
   "acid-base-solutions",
@@ -46,6 +48,42 @@ end
 
 def generate_deb_files(app)
   puts "Generating Deb files ..."
+  FileUtils.rm_rf app
+  Dir.mkdir(app)
+  Dir.chdir(app) do
+    Dir.mkdir('debian')
+    Dir.chdir('debian') do
+      generate_changelog(app)
+      generate_control(app)
+      generate_compat(app)
+    end
+  end
+  puts ".. Done!"
+end
+
+def generate_control(app)
+  contents = <<-FILE
+    Source: #{app}
+    Maintainer: Balaswecha Team<balaswecha-dev-team@thoughtworks.com>
+    Section: misc
+    Priority: optional
+    Standards-Version: 3.9.2
+    Build-Depends: debhelper (>= 9)
+
+    Package: #{app}
+    Architecture: any
+    Depends: ${shlibs:Depends}, ${misc:Depends}
+    Description: #{app}
+    #{app} is an educational simulation.
+  FILE
+  File.write('control', contents)
+end
+
+def generate_changelog(app)
+end
+
+def generate_compat(app)
+  File.write('compat', '9\n')
 end
 
 def generate_deb(app)
