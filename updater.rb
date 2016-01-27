@@ -51,11 +51,14 @@ def generate_deb_files(app)
   FileUtils.rm_rf app
   Dir.mkdir(app)
   Dir.chdir(app) do
-    Dir.mkdir('debian')
-    Dir.chdir('debian') do
-      generate_changelog(app)
-      generate_control(app)
-      generate_compat(app)
+    Dir.mkdir("#{app}-1.0")
+    Dir.chdir("#{app}-1.0") do
+      Dir.mkdir('debian')
+      Dir.chdir('debian') do
+        generate_changelog(app)
+        generate_control(app)
+        generate_compat(app)
+      end
     end
   end
   puts ".. Done!"
@@ -83,7 +86,7 @@ def generate_changelog(app)
   contents = <<-FILE
     #{app} (1.0-1) UNRELEASED; urgency=low
 
-     * Initial release. (Closes: #XXXXXX)
+     * Initial release.
 
     -- Balaswecha Team <balaswecha-dev-team@thoughtworks.com>  #{Time.now.strftime '%a, %-d %b %Y %H:%M:%S %z'}
   FILE
@@ -91,12 +94,15 @@ def generate_changelog(app)
 end
 
 def generate_compat(app)
-  File.write('compat', '9\n')
+  File.write('compat', "9\n")
 end
 
 def generate_deb(app)
-  download_app(app)
-  generate_deb_files(app)
+  Dir.mkdir('dist')
+  Dir.chdir('dist') do
+    download_app(app)
+    generate_deb_files(app)
+  end
 end
 
 #apps = apps.take(1)
