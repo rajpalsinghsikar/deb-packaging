@@ -43,8 +43,17 @@ def uri_for(app)
   #"http://localhost/#{app}_en.html"
 end
 
+def icon_for(app)
+  "#{BASE_URL}/#{app}/latest/#{app}-600.png"
+  #"http://localhost/#{app}_en.html"
+end
+
 def download_app(app)
   `wget -nv #{uri_for(app)}`
+end
+
+def download_icon(app)
+  `wget -nv #{icon_for(app)}`
 end
 
 def generate_tar(app, version)
@@ -52,6 +61,7 @@ def generate_tar(app, version)
   Dir.mkdir(appWithVersion)
   Dir.chdir(appWithVersion) do
     download_app(app)
+    generate_desktop(app)
   end
   tar_filename = "#{app}_#{version}.orig.tar.gz"
   `tar czf #{tar_filename} #{appWithVersion}`
@@ -108,6 +118,7 @@ end
 def generate_install(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
     #{app}_en.html usr/local/lib/balaswecha/html
+    #{app}.desktop usr/share/applications
   FILE
   File.write("#{app}.install", contents)
 end
@@ -131,16 +142,20 @@ def generate_control(app)
 end
 
 def generate_desktop(app)
-  contents = "[Desktop Entry]
-  Name=#{app}
-  Comment=Simulation for #{app}
-  Exec=chromium-browser usr/local/lib/balaswecha/html/#{app}_en.html
-  Icon=[link to icon(not required)]
-  Terminal=false
-  Type=Application
-  Categories=Simulations
+  icon = download_icon(app)
+
+  contents = <<-FILE.gsub(/^ {4}/, '')
+    [Desktop Entry]
+    Name=#{app}
+    Comment=Simulation for #{app}
+    Exec=chromium-browser /usr/local/lib/balaswecha/html/#{app}_en.html
+    Icon=#{icon}
+    Terminal=false
+    Type=Application
+    Categories=Simulations
   FILE
 
+  File.write("#{app}.desktop",contents)
 end
 
 def generate_changelog(app)
