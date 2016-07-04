@@ -57,7 +57,7 @@ def generate_tar(app, version)
   `tar czf #{tar_filename} #{appWithVersion}`
   FileUtils.rm_rf(appWithVersion)
   tar_filename
-end 
+end
 
 def extract_tar(filename)
   `tar xzf #{filename}`
@@ -123,11 +123,24 @@ def generate_control(app)
 
     Package: #{app}
     Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends}
+    Depends: ${shlibs:Depends}, ${misc:Depends},chromium-browser
     Description: #{app}
      #{app} is an educational simulation.
   FILE
   File.write('control', contents)
+end
+
+def generate_desktop(app)
+  contents = "[Desktop Entry]
+  Name=#{app}
+  Comment=Simulation for #{app}
+  Exec=chromium-browser usr/local/lib/balaswecha/html/#{app}_en.html
+  Icon=[link to icon(not required)]
+  Terminal=false
+  Type=Application
+  Categories=Simulations
+  FILE
+
 end
 
 def generate_changelog(app)
