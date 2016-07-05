@@ -60,10 +60,11 @@ end
 
 def generate_tar(app, version)
   appWithVersion = "#{app}-#{version}"
+  icon = download_icon(app)
   Dir.mkdir(appWithVersion)
   Dir.chdir(appWithVersion) do
     download_app(app)
-    generate_desktop(app)
+    generate_desktop(app,icon)
   end
   tar_filename = "#{app}_#{version}.orig.tar.gz"
   `tar czf #{tar_filename} #{appWithVersion}`
@@ -143,9 +144,7 @@ def generate_control(app)
   File.write('control', contents)
 end
 
-def generate_desktop(app)
-  icon = download_icon(app)
-
+def generate_desktop(app,icon)
   contents = <<-FILE.gsub(/^ {4}/, '')
     [Desktop Entry]
     Name=#{app}
