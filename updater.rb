@@ -23,17 +23,20 @@ apps = [
   "graphing-lines",
   "gravity-force-lab",
   "hookes-law",
+  "isotopes-and-atomic-mass",
   "john-travoltage",
   "least-squares-regression",
   "molarity",
   "molecules-and-light",
   "molecule-shapes",
   "molecule-shapes-basics",
+  "neuron",
   "ohms-law",
   "ph-scale",
   "ph-scale-basics",
   "reactants-products-and-leftovers",
   "resistance-in-a-wire",
+  "trig-tour",
   "under-pressure",
   "wave-on-a-string"
 ]
@@ -45,7 +48,6 @@ end
 
 def icon_for(app)
   "#{BASE_URL}/#{app}/latest/#{app}-600.png"
-  #"http://localhost/#{app}_en.html"
 end
 
 def download_app(app)
