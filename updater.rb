@@ -42,12 +42,12 @@ apps = [
 ]
 
 def uri_for(app)
-  "#{BASE_URL}/#{app}/latest/#{app}_en.html"
+  "#{BASE_URL}#{app}/latest/#{app}_en.html"
   #"http://localhost/#{app}_en.html"
 end
 
 def icon_for(app)
-  "#{BASE_URL}/#{app}/latest/#{app}-600.png"
+  "#{BASE_URL}#{app}/latest/#{app}-600.png"
 end
 
 def download_app(app)
@@ -60,10 +60,10 @@ end
 
 def generate_tar(app, version)
   appWithVersion = "#{app}-#{version}"
-  icon = download_icon(app)
   Dir.mkdir(appWithVersion)
   Dir.chdir(appWithVersion) do
     download_app(app)
+    download_icon(app)
     generate_desktop(app,icon)
   end
   tar_filename = "#{app}_#{version}.orig.tar.gz"
@@ -122,6 +122,7 @@ def generate_install(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
     #{app}_en.html usr/local/lib/balaswecha/html
     #{app}.desktop usr/share/applications
+    #{app}-600.png /usr/share/icons
   FILE
   File.write("#{app}.install", contents)
 end
@@ -150,7 +151,7 @@ def generate_desktop(app,icon)
     Name=#{app}
     Comment=Simulation for #{app}
     Exec=chromium-browser /usr/local/lib/balaswecha/html/#{app}_en.html
-    Icon=#{icon}
+    Icon=#{app}-600
     Terminal=false
     Type=Application
     Categories=Simulations
