@@ -2,52 +2,26 @@
 
 require 'fileutils'
 
-BASE_URL="http://phet.colorado.edu/sims/html/"
+BASE_URL="http://phet.colorado.edu/sims"
 apps = [
-  "acid-base-solutions",
-  "area-builder",
-  "arithmetic",
-  "balancing-act",
-  "balancing-chemical-equations",
-  "balloons-and-static-electricity",
-  "beers-law-lab",
-  "bending-light",
-  "build-an-atom",
-  "color-vision",
-  "concentration",
-  "energy-skate-park-basics",
-  "faradays-law",
-  "forces-and-motion-basics",
-  "fraction-matcher",
-  "friction",
-  "graphing-lines",
-  "gravity-force-lab",
-  "hookes-law",
-  "isotopes-and-atomic-mass",
-  "john-travoltage",
-  "least-squares-regression",
-  "molarity",
-  "molecules-and-light",
-  "molecule-shapes",
-  "molecule-shapes-basics",
-  "neuron",
-  "ohms-law",
-  "ph-scale",
-  "ph-scale-basics",
-  "reactants-products-and-leftovers",
-  "resistance-in-a-wire",
-  "trig-tour",
-  "under-pressure",
-  "wave-on-a-string"
+  { 
+    "launcher_name"=>"Balloons and Buoyancy",
+    "name"=>"balloons-and-buoyancy",
+    "jar_url"=>"ideal-gas/balloons-and-buoyancy_en.jar",
+    "icon_url"=>"ideal-gas/balloons-and-buoyancy-128.png",
+    "ldesc"=>"Experiment with a helium balloon, a hot air balloon, or a rigid sphere filled with different gases",
+    "desc"=>"Discover what makes some balloons float and others sink.",
+    "dependencies"=> ["java-runtime"],
+  }
+
 ]
 
 def uri_for(app)
-  "#{BASE_URL}#{app}/latest/#{app}_en.html"
-  #"http://localhost/#{app}_en.html"
+  "#{BASE_URL}/#{app["jar_url"]}"
 end
 
 def icon_for(app)
-  "#{BASE_URL}#{app}/latest/#{app}-600.png"
+  "#{BASE_URL}/#{app["icon_url"]}"
 end
 
 def download_app(app)
@@ -55,18 +29,19 @@ def download_app(app)
 end
 
 def download_icon(app)
-  `wget -nv #{icon_for(app)}`
+  `wget -nv -O #{app["name"]}.png #{icon_for(app)}`
 end
 
 def generate_tar(app, version)
-  appWithVersion = "#{app}-#{version}"
+  appWithVersion = "#{app["name"]}-#{version}"
   Dir.mkdir(appWithVersion)
   Dir.chdir(appWithVersion) do
     download_app(app)
     download_icon(app)
-    generate_desktop(app,icon)
+    generate_desktop(app)
+    generate_bin(app)
   end
-  tar_filename = "#{app}_#{version}.orig.tar.gz"
+  tar_filename = "#{app["name"]}_#{version}.orig.tar.gz"
   `tar czf #{tar_filename} #{appWithVersion}`
   FileUtils.rm_rf(appWithVersion)
   tar_filename
@@ -76,29 +51,29 @@ def extract_tar(filename)
   `tar xzf #{filename}`
 end
 
-def generate_deb_files(app, version)
+def generate_meta_files(app, version)
   puts "Generating Deb files ..."
   Dir.mkdir('debian')
   Dir.chdir('debian') do
     generate_changelog(app)
     generate_control(app)
-    generate_compat(app)
-    generate_copyright(app)
-    generate_rules(app)
+    generate_compat()
+    generate_copyright()
+    generate_rules()
     generate_install(app)
-    generate_format(app)
+    generate_format()
   end
   puts ".. Done!"
 end
 
-def generate_copyright(app)
+def generate_copyright()
   contents = <<-FILE.gsub(/^ {4}/, '')
     GPL V3
   FILE
   File.write('copyright', contents)
 end
 
-def generate_rules(app)
+def generate_rules()
   contents = <<-FILE.gsub(/^ {4}/, '')
     #!/usr/bin/make -f
     %:
@@ -108,7 +83,7 @@ def generate_rules(app)
   File.write("rules", contents)
 end
 
-def generate_format(app)
+def generate_format()
   Dir.mkdir('source')
   Dir.chdir('source') do
     contents = <<-FILE.gsub(/^ {6}/, '')
@@ -120,49 +95,57 @@ end
 
 def generate_install(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    #{app}_en.html usr/local/lib/balaswecha/html
-    #{app}.desktop usr/share/applications
-    #{app}-600.png /usr/share/icons
+    #{app["name"]}_en.jar usr/lib/balaswecha/java
+    #{app["name"]}.desktop usr/share/applications
+    #{app["name"]}.png usr/share/icons/hicolor/128x128/apps
+    #{app["name"]} usr/bin
   FILE
-  File.write("#{app}.install", contents)
+  File.write("#{app["name"]}.install", contents)
 end
 
 def generate_control(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    Source: #{app}
+    Source: #{app["name"]}
     Maintainer: Balaswecha Team<balaswecha-dev-team@thoughtworks.com>
     Section: misc
     Priority: optional
     Standards-Version: 3.9.2
     Build-Depends: debhelper (>= 9)
 
-    Package: #{app}
+    Package: #{app["name"]}
     Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends},chromium-browser
-    Description: #{app}
-     #{app} is an educational simulation.
+    Depends: ${shlibs:Depends}, ${misc:Depends}, java-runtime
+    Description: #{app["desc"]}
+     #{app["ldesc"]}
   FILE
   File.write('control', contents)
 end
 
-def generate_desktop(app,icon)
+def generate_desktop(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
     [Desktop Entry]
-    Name=#{app}
-    Comment=Simulation for #{app}
-    Exec=chromium-browser /usr/local/lib/balaswecha/html/#{app}_en.html
-    Icon=#{app}-600
+    Name=#{app["launcher_name"]}
+    Comment=Simulation for #{app["name"]}
+    Exec=#{app["name"]}
+    Icon=#{app["name"]}
     Terminal=false
     Type=Application
     Categories=Simulations
   FILE
 
-  File.write("#{app}.desktop",contents)
+  File.write("#{app["name"]}.desktop",contents)
+end
+
+def generate_bin(app)
+  contents = <<-FILE.gsub(/^ {4}/, '')
+    java -jar /usr/lib/balaswecha/java/#{app["name"]}_en.jar
+  FILE
+  File.write(app["name"], contents)
 end
 
 def generate_changelog(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    #{app} (1.0-1) UNRELEASED; urgency=low
+    #{app["name"]} (1.0-1) UNRELEASED; urgency=low
 
       * Initial release. (Closes: #XXXXX)
 
@@ -171,12 +154,12 @@ def generate_changelog(app)
   File.write('changelog', contents)
 end
 
-def generate_compat(app)
+def generate_compat()
   File.write('compat', "9\n")
 end
 
 def generate_deb
-  `debuild -us -uc`
+  `debuild -i -us -uc -b`
 end
 
 FileUtils.rm_rf 'dist'
@@ -184,13 +167,13 @@ Dir.mkdir('dist')
 Dir.chdir('dist') do
   #apps = apps.take(1)
   apps.each do |app|
-    Dir.mkdir(app)
-    Dir.chdir(app) do
+    Dir.mkdir(app["name"])
+    Dir.chdir(app["name"]) do
       version = "1.0"
       tar_filename = generate_tar(app, version)
       extract_tar(tar_filename)
-      Dir.chdir("#{app}-#{version}") do
-        generate_deb_files(app, version)
+      Dir.chdir("#{app["name"]}-#{version}") do
+        generate_meta_files(app, version)
         generate_deb
       end
     end
