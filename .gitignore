@@ -1,3 +1,5 @@
 .DS_Store
 html/dist/
 java/dist/
+.idea
+*.iml
