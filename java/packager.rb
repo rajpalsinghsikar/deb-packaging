@@ -3,7 +3,7 @@
 require 'fileutils'
 apps_data_file= './apps.rb'
 
-BASE_URL="http://phet.colorado.edu/sims"
+# BASE_URL="http://phet.colorado.edu/sims"
 # apps = [
 #   {
 #     "launcher_name"=>"Balloons and Buoyancy",
@@ -21,11 +21,13 @@ require apps_data_file
 puts $apps
 
 def uri_for(app)
-  "#{BASE_URL}/#{app["jar_url"]}"
+  "#{app["jar_url"]}"
+  # "#{BASE_URL}/#{app["jar_url"]}"
 end
 
 def icon_for(app)
-  "#{BASE_URL}/#{app["icon_url"]}"
+   "#{app["icon_url"]}"
+   # "#{BASE_URL}/#{app["icon_url"]}"
 end
 
 def download_app(app)
@@ -120,7 +122,6 @@ def generate_control(app)
     Architecture: any
     Depends: ${shlibs:Depends}, ${misc:Depends}, java-runtime
     Description: #{app["desc"]}
-     #{app["ldesc"]}
   FILE
   File.write('control', contents)
 end
