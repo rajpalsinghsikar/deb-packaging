@@ -107,7 +107,7 @@ def generate_control(app)
 
     Package: #{app}
     Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends},chromium-browser
+    Depends: ${shlibs:Depends}, ${misc:Depends},firefox
     Description: #{app}
      #{app} is an educational simulation.
   FILE
@@ -119,7 +119,7 @@ def generate_desktop(app)
     [Desktop Entry]
     Name=#{app}
     Comment=Simulation for #{app}
-    Exec=#{app["name"]}
+    Exec=#{app}
     Icon=#{app}-600
     Terminal=false
     Type=Application
@@ -133,7 +133,7 @@ def generate_bin(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
     firefox --new-window /usr/local/lib/balaswecha/html/#{app}_en.html
   FILE
-  File.write(app["name"], contents)
+  File.write(app, contents)
 end
 
 def generate_changelog(app)
