@@ -1,45 +1,13 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+apps_data_file= './apps.rb'
 
-BASE_URL="http://phet.colorado.edu/sims/html/"
-apps = [
-  "acid-base-solutions",
-  "area-builder",
-  "arithmetic",
-  "balancing-act",
-  "balancing-chemical-equations",
-  "balloons-and-static-electricity",
-  "beers-law-lab",
-  "bending-light",
-  "build-an-atom",
-  "color-vision",
-  "concentration",
-  "energy-skate-park-basics",
-  "faradays-law",
-  "forces-and-motion-basics",
-  "fraction-matcher",
-  "friction",
-  "graphing-lines",
-  "gravity-force-lab",
-  "hookes-law",
-  "isotopes-and-atomic-mass",
-  "john-travoltage",
-  "least-squares-regression",
-  "molarity",
-  "molecules-and-light",
-  "molecule-shapes",
-  "molecule-shapes-basics",
-  "neuron",
-  "ohms-law",
-  "ph-scale",
-  "ph-scale-basics",
-  "reactants-products-and-leftovers",
-  "resistance-in-a-wire",
-  "trig-tour",
-  "under-pressure",
-  "wave-on-a-string"
-]
+
+require apps_data_file
+puts $apps
+
+BASE_URL='http://phet.colorado.edu/sims/html/'
 
 def uri_for(app)
   "#{BASE_URL}#{app}/latest/#{app}_en.html"
@@ -65,6 +33,7 @@ def generate_tar(app, version)
     download_app(app)
     download_icon(app)
     generate_desktop(app)
+    generate_bin(app)
   end
   tar_filename = "#{app}_#{version}.orig.tar.gz"
   `tar czf #{tar_filename} #{appWithVersion}`
@@ -150,7 +119,7 @@ def generate_desktop(app)
     [Desktop Entry]
     Name=#{app}
     Comment=Simulation for #{app}
-    Exec=chromium-browser /usr/local/lib/balaswecha/html/#{app}_en.html
+    Exec=#{app["name"]}
     Icon=#{app}-600
     Terminal=false
     Type=Application
@@ -158,6 +127,13 @@ def generate_desktop(app)
   FILE
 
   File.write("#{app}.desktop",contents)
+end
+
+def generate_bin(app)
+  contents = <<-FILE.gsub(/^ {4}/, '')
+    firefox --new-window /usr/local/lib/balaswecha/html/#{app}_en.html
+  FILE
+  File.write(app["name"], contents)
 end
 
 def generate_changelog(app)
@@ -183,7 +159,7 @@ FileUtils.rm_rf 'dist'
 Dir.mkdir('dist')
 Dir.chdir('dist') do
   #apps = apps.take(1)
-  apps.each do |app|
+  $apps.each do |app|
     Dir.mkdir(app)
     Dir.chdir(app) do
       version = "1.0"

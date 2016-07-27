@@ -3,19 +3,6 @@
 require 'fileutils'
 apps_data_file= './apps.rb'
 
-# BASE_URL="http://phet.colorado.edu/sims"
-# apps = [
-#   {
-#     "launcher_name"=>"Balloons and Buoyancy",
-#     "name"=>"balloons-and-buoyancy",
-#     "jar_url"=>"ideal-gas/balloons-and-buoyancy_en.jar",
-#     "icon_url"=>"ideal-gas/balloons-and-buoyancy-128.png",
-#     "ldesc"=>"Experiment with a helium balloon, a hot air balloon, or a rigid sphere filled with different gases",
-#     "desc"=>"Discover what makes some balloons float and others sink.",
-#     "dependencies"=> ["java-runtime"],
-#   }
-#
-# ]
 
 require apps_data_file
 puts $apps
