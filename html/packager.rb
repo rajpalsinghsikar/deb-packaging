@@ -11,11 +11,10 @@ BASE_URL='http://phet.colorado.edu/sims/html/'
 
 def uri_for(app)
   "#{BASE_URL}#{app}/latest/#{app}_en.html"
-  #"http://localhost/#{app}_en.html"
 end
 
 def icon_for(app)
-  "#{BASE_URL}#{app}/latest/#{app}-600.png"
+   "#{BASE_URL}#{app}/latest/#{app}-600.png"
 end
 
 def download_app(app)
@@ -23,7 +22,7 @@ def download_app(app)
 end
 
 def download_icon(app)
-  `wget -nv #{icon_for(app)}`
+  `wget -nv -O #{app}.png #{icon_for(app)}`
 end
 
 def generate_tar(app, version)
@@ -45,29 +44,29 @@ def extract_tar(filename)
   `tar xzf #{filename}`
 end
 
-def generate_deb_files(app, version)
+def generate_meta_files(app, version)
   puts "Generating Deb files ..."
   Dir.mkdir('debian')
   Dir.chdir('debian') do
     generate_changelog(app)
     generate_control(app)
-    generate_compat(app)
-    generate_copyright(app)
-    generate_rules(app)
+    generate_compat()
+    generate_copyright()
+    generate_rules()
     generate_install(app)
-    generate_format(app)
+    generate_format()
   end
   puts ".. Done!"
 end
 
-def generate_copyright(app)
+def generate_copyright()
   contents = <<-FILE.gsub(/^ {4}/, '')
     GPL V3
   FILE
   File.write('copyright', contents)
 end
 
-def generate_rules(app)
+def generate_rules()
   contents = <<-FILE.gsub(/^ {4}/, '')
     #!/usr/bin/make -f
     %:
@@ -77,7 +76,7 @@ def generate_rules(app)
   File.write("rules", contents)
 end
 
-def generate_format(app)
+def generate_format()
   Dir.mkdir('source')
   Dir.chdir('source') do
     contents = <<-FILE.gsub(/^ {6}/, '')
@@ -89,9 +88,10 @@ end
 
 def generate_install(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    #{app}_en.html usr/local/lib/balaswecha/html
+    #{app}_en.html usr/lib/balaswecha/html
     #{app}.desktop usr/share/applications
-    #{app}-600.png /usr/share/icons
+    #{app}.png usr/share/icons/
+    #{app} usr/bin
   FILE
   File.write("#{app}.install", contents)
 end
@@ -107,9 +107,8 @@ def generate_control(app)
 
     Package: #{app}
     Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends},chromium-browser
+    Depends: ${shlibs:Depends}, ${misc:Depends}, firefox
     Description: #{app}
-     #{app} is an educational simulation.
   FILE
   File.write('control', contents)
 end
@@ -119,8 +118,8 @@ def generate_desktop(app)
     [Desktop Entry]
     Name=#{app}
     Comment=Simulation for #{app}
-    Exec=#{app["name"]}
-    Icon=#{app}-600
+    Exec=#{app}
+    Icon=#{app}
     Terminal=false
     Type=Application
     Categories=Simulations
@@ -131,9 +130,9 @@ end
 
 def generate_bin(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    firefox --new-window /usr/local/lib/balaswecha/html/#{app}_en.html
+    firefox --new-window /usr/lib/balaswecha/html/#{app}_en.html 
   FILE
-  File.write(app["name"], contents)
+  File.write(app, contents)
 end
 
 def generate_changelog(app)
@@ -147,12 +146,12 @@ def generate_changelog(app)
   File.write('changelog', contents)
 end
 
-def generate_compat(app)
+def generate_compat()
   File.write('compat', "9\n")
 end
 
 def generate_deb
-  `debuild -us -uc`
+  `debuild -i -us -uc -b`
 end
 
 FileUtils.rm_rf 'dist'
@@ -166,7 +165,7 @@ Dir.chdir('dist') do
       tar_filename = generate_tar(app, version)
       extract_tar(tar_filename)
       Dir.chdir("#{app}-#{version}") do
-        generate_deb_files(app, version)
+        generate_meta_files(app, version)
         generate_deb
       end
     end

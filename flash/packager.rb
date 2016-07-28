@@ -7,12 +7,22 @@ apps_data_file= './apps.rb'
 require apps_data_file
 puts $apps
 
+BASE_URL='http://phet.colorado.edu/sims/'
+
 def uri_for(app)
-  "#{app["jar_url"]}"
+  if app =='buoyancy' || app =='density'
+    "#{BASE_URL}density-and-buoyancy/#{app}_en.html"  
+  else 
+    "#{BASE_URL}#{app}/#{app}_en.html"
+  end
 end
 
 def icon_for(app)
-   "#{app["icon_url"]}"
+  if app =='buoyancy' || app =='density'
+    "#{BASE_URL}density-and-buoyancy/#{app}-600.png"  
+  else 
+    "#{BASE_URL}#{app}/#{app}-600.png"
+  end
 end
 
 def download_app(app)
@@ -20,11 +30,11 @@ def download_app(app)
 end
 
 def download_icon(app)
-  `wget -nv -O #{app["name"]}.png #{icon_for(app)}`
+  `wget -nv -O #{app}.png #{icon_for(app)}`
 end
 
 def generate_tar(app, version)
-  appWithVersion = "#{app["name"]}-#{version}"
+  appWithVersion = "#{app}-#{version}"
   Dir.mkdir(appWithVersion)
   Dir.chdir(appWithVersion) do
     download_app(app)
@@ -32,7 +42,7 @@ def generate_tar(app, version)
     generate_desktop(app)
     generate_bin(app)
   end
-  tar_filename = "#{app["name"]}_#{version}.orig.tar.gz"
+  tar_filename = "#{app}_#{version}.orig.tar.gz"
   `tar czf #{tar_filename} #{appWithVersion}`
   FileUtils.rm_rf(appWithVersion)
   tar_filename
@@ -86,27 +96,27 @@ end
 
 def generate_install(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    #{app["name"]}_en.jar usr/lib/balaswecha/java
-    #{app["name"]}.desktop usr/share/applications
-    #{app["name"]}.png usr/share/icons/hicolor/128x128/apps
-    #{app["name"]} usr/bin
+    #{app}_en.html usr/lib/balaswecha/html
+    #{app}.desktop usr/share/applications
+    #{app}.png usr/share/icons/
+    #{app} usr/bin
   FILE
-  File.write("#{app["name"]}.install", contents)
+  File.write("#{app}.install", contents)
 end
 
 def generate_control(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    Source: #{app["name"]}
+    Source: #{app}
     Maintainer: Balaswecha Team<balaswecha-dev-team@thoughtworks.com>
     Section: misc
     Priority: optional
     Standards-Version: 3.9.2
     Build-Depends: debhelper (>= 9)
 
-    Package: #{app["name"]}
+    Package: #{app}
     Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends}, java-runtime
-    Description: #{app["desc"]}
+    Depends: ${shlibs:Depends}, ${misc:Depends}, firefox,flashplugin-installer
+    Description: #{app}
   FILE
   File.write('control', contents)
 end
@@ -114,28 +124,28 @@ end
 def generate_desktop(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
     [Desktop Entry]
-    Name=#{app["launcher_name"]}
-    Comment=Simulation for #{app["name"]}
-    Exec=#{app["name"]}
-    Icon=#{app["name"]}
+    Name=#{app}
+    Comment=Simulation for #{app}
+    Exec=#{app}
+    Icon=#{app}
     Terminal=false
     Type=Application
     Categories=Simulations
   FILE
 
-  File.write("#{app["name"]}.desktop",contents)
+  File.write("#{app}.desktop",contents)
 end
 
 def generate_bin(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    java -jar /usr/lib/balaswecha/java/#{app["name"]}_en.jar
+    firefox --new-window /usr/lib/balaswecha/flash/#{app}_en.html 
   FILE
-  File.write(app["name"], contents)
+  File.write(app, contents)
 end
 
 def generate_changelog(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    #{app["name"]} (1.0-1) UNRELEASED; urgency=low
+    #{app} (1.0-1) UNRELEASED; urgency=low
 
       * Initial release. (Closes: #XXXXX)
 
@@ -157,12 +167,12 @@ Dir.mkdir('dist')
 Dir.chdir('dist') do
   #apps = apps.take(1)
   $apps.each do |app|
-    Dir.mkdir(app["name"])
-    Dir.chdir(app["name"]) do
+    Dir.mkdir(app)
+    Dir.chdir(app) do
       version = "1.0"
       tar_filename = generate_tar(app, version)
       extract_tar(tar_filename)
-      Dir.chdir("#{app["name"]}-#{version}") do
+      Dir.chdir("#{app}-#{version}") do
         generate_meta_files(app, version)
         generate_deb
       end
