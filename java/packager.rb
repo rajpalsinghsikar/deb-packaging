@@ -105,7 +105,7 @@ def generate_control(app)
 
     Package: #{app["name"]}
     Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends}, java-runtime
+    Depends: ${shlibs:Depends}, ${misc:Depends}, default-jre
     Description: #{app["desc"]}
   FILE
   File.write('control', contents)
