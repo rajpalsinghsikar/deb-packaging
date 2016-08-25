@@ -1,5 +1,7 @@
 .DS_Store
-html/dist/
-java/dist/
+phetsims/html/dist/
+phetsims/java/dist/
+phetsims/flash/dist/
+phetsims/key.rb
 .idea
 *.iml
