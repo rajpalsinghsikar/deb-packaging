@@ -1,7 +1,7 @@
 "use strict";
 
 var fs = require('fs');
-var path = './flashApps.rb';
+var path = './htmlApps.rb';
 
 var webPage = require('webpage');
 var page = webPage.create();
