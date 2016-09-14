@@ -2,7 +2,7 @@
 
 apps_data_file = './apps.rb'
 require apps_data_file
-key_file = '../key.rb'
+key_file = '../../key.rb'
 require key_file
 
 $current_date = `date -I`

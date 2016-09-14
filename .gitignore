@@ -2,7 +2,8 @@
 phetsims/html/dist/
 phetsims/java/dist/
 phetsims/flash/dist/
-phetsims/key.rb
-meta-package/all_apps
+key.rb
+balaswecha-apps/all_apps/
+balaswecha-apps/dist/
 .idea
 *.iml
