@@ -1,49 +1,19 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+app = 'balaswecha-skin'
 
-native_apps = ["celestia",
-               "geogebra",
-               "kgeography",
-               "kalzium",
-               "kbruch",
-               "stellarium",
-               "step",
-               "tuxmath",
-               "openteacher",
-               "khangman",
-               "turtleart",
-               "marble",
-               "kwordquiz",
-               "kturtle",
-               "gcompris",
-               "klettres"]
-
-def get_apps(type)
-  require "../phetsims/#{type}/apps.rb"
-  return $apps
-end
-
-java_apps = get_apps('java').map { |app| app["name"] }
-
-flash_apps = get_apps('flash') 
-
-html_apps = get_apps('html')
-
-dependency_str = (java_apps + flash_apps + html_apps + native_apps).join(', ')
-puts dependency_str
-
-app = 'balaswecha-apps'
-
-def generate_meta_files(app, version,dependency_str)
+def generate_meta_files(app, version)
   puts "Generating Deb files ..."
   Dir.mkdir('debian')
   Dir.chdir('debian') do
     generate_changelog(app)
-    generate_control(app,dependency_str)
+    generate_control(app)
     generate_compat()
     generate_copyright()
     generate_rules()
+    generate_install(app)
+    generate_postinst(app)
     generate_format()
   end
 end
@@ -75,7 +45,24 @@ def generate_format()
   end
 end
 
-def generate_control(app,dependency_str)
+def generate_install(app)
+  contents = <<-FILE.gsub(/^ {4}/, '')
+    balaswecha-dark.png usr/share/backgrounds/
+    balaswecha-default.jpg usr/share/backgrounds/
+  FILE
+  File.write("#{app}.install", contents)
+end
+
+def generate_postinst(app)
+  contents = <<-FILE.gsub(/^ {4}/, '')
+     #!/usr/bin/env bash
+     
+     #gsettings set org.gnome.desktop.background draw-background false && gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/balaswecha-dark.jpg  && gsettings set org.gnome.desktop.background draw-background true
+  FILE
+  File.write('postinst', contents)
+end
+
+def generate_control(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
     Source: #{app}
     Maintainer: Balaswecha Team<balaswecha-dev-team@thoughtworks.com>
@@ -86,20 +73,21 @@ def generate_control(app,dependency_str)
 
     Package: #{app}
     Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends}, #{dependency_str}
-    Description: Meta-package for all Balaswecha Applications
+    Depends: ${shlibs:Depends}, ${misc:Depends}
+    Description: BalaSwecha Icon and Wallpaper Pack
   FILE
   File.write('control', contents)
 end
 
 def generate_changelog(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-#{app} (1.0-1) UNRELEASED; urgency=low
+    #{app} (1.0-1) UNRELEASED; urgency=low 
 
       * Initial release. (Closes: #XXXXX)
 
      -- Balaswecha Team <balaswecha-dev-team@thoughtworks.com>  #{Time.now.strftime '%a, %-d %b %Y %H:%M:%S %z'}
   FILE
+  puts contents
   File.write('changelog', contents)
 end
 
@@ -109,16 +97,16 @@ end
 
 def generate_deb
   `debuild -i -us -uc -b`
-  puts "Done!"
+  puts ".. Done!"
 end
 
 FileUtils.rm_rf 'dist'
 Dir.mkdir('dist')
 Dir.chdir('dist') do
   version = "1.0"
-  Dir.mkdir("#{app}-#{version}")
+  FileUtils.cp_r("../wallpapers","#{app}-#{version}/")
   Dir.chdir("#{app}-#{version}") do
-    generate_meta_files(app, version,dependency_str)
+    generate_meta_files(app, version)
     generate_deb
   end
 end

@@ -2,8 +2,8 @@
 phetsims/html/dist/
 phetsims/java/dist/
 phetsims/flash/dist/
-key.rb
-balaswecha-apps/all_apps/
 balaswecha-apps/dist/
+balaswecha-skin/dist/
+key.rb
 .idea
 *.iml
