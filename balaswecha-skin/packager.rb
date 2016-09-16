@@ -49,6 +49,22 @@ def generate_install(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
     balaswecha-dark.png usr/share/backgrounds/
     balaswecha-default.jpg usr/share/backgrounds/
+
+    biology.desktop usr/share/applications/
+    chemistry.desktop usr/share/applications/
+    physics.desktop usr/share/applications/
+    english.desktop usr/share/applications/
+    maths.desktop usr/share/applications/
+    social.desktop usr/share/applications/
+
+    biology.png usr/share/icons/
+    chemistry.png usr/share/icons/
+    physics.png usr/share/icons/
+    english.png usr/share/icons/
+    maths.png usr/share/icons/
+    social.png usr/share/icons/
+
+    balaswecha_skin_setup usr/bin/
   FILE
   File.write("#{app}.install", contents)
 end
@@ -56,7 +72,8 @@ end
 def generate_postinst(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
      #!/usr/bin/env bash
-     
+
+     echo "$(tput setaf 1)$(tput setab 8)You need to run that balaswecha_skin_setup command to set up balaswecha wallpapers/$(tput sgr 0)"
      #gsettings set org.gnome.desktop.background draw-background false && gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/balaswecha-dark.jpg  && gsettings set org.gnome.desktop.background draw-background true
   FILE
   File.write('postinst', contents)
@@ -105,6 +122,9 @@ Dir.mkdir('dist')
 Dir.chdir('dist') do
   version = "1.0"
   FileUtils.cp_r("../wallpapers","#{app}-#{version}/")
+  FileUtils.cp_r("../icons","#{app}-#{version}/")
+  FileUtils.cp_r("../desktop_files","#{app}-#{version}/")
+  FileUtils.cp("../balaswecha_skin_setup","#{app}-#{version}/")
   Dir.chdir("#{app}-#{version}") do
     generate_meta_files(app, version)
     generate_deb

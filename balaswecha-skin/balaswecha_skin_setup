@@ -1,0 +1,7 @@
+#!/usr/bin/ bash
+
+favorites = ['application://pencilbox.desktop', 'application://nautilus.desktop', 'application://chromium-browser.desktop', 'application://libreoffice-writer.desktop', 'application://libreoffice-calc.desktop', 'application://libreoffice-impress.desktop', 'application://openshot.desktop', 'application://audacity.desktop', 'application://chrome-eealagocaipaflcjmeapmobpmilffopi-Default.desktop', 'unity://running-apps', 'unity://expo-icon', 'unity://devices']
+
+gsettings set org.gnome.desktop.background draw-background false && gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/balaswecha-dark.png  && gsettings set org.gnome.desktop.background draw-background true
+
+gsettings set com.canonical.Unity.Launcher favorites  "['application://pencilbox.desktop', 'application://nautilus.desktop', 'application://chromium-browser.desktop', 'application://libreoffice-writer.desktop', 'application://libreoffice-calc.desktop', 'application://libreoffice-impress.desktop', 'application://openshot.desktop', 'application://audacity.desktop', 'application://chrome-eealagocaipaflcjmeapmobpmilffopi-Default.desktop', 'unity://running-apps', 'unity://expo-icon', 'unity://devices']""
