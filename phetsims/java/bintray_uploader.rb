@@ -20,7 +20,7 @@ end
 
 def upload_package(app)
 
-`curl -v -u#{$key} -H "X-Bintray-Debian-Distribution: trusty" -H "X-Bintray-Debian-Component: main" -H "X-Bintray-Debian-Architecture: amd64" -H "publish:1" -X PUT -T #{app["name"]}_1.0-1_amd64.deb https://api.bintray.com/content/balaswecha/balaswecha-dev/#{app["name"]}/1.0-1/pool/main/#{app["name"].chars.first}/#{app["name"]}/#{app["name"]}_1.0-1_amd64.deb`
+`curl -v -u#{$key} -H "X-Bintray-Debian-Distribution: trusty,xenial,jessie,stretch" -H "X-Bintray-Debian-Component: main" -H "X-Bintray-Debian-Architecture: all" -H "publish:1" -X PUT -T #{app["name"]}_1.0-1_all.deb https://api.bintray.com/content/balaswecha/balaswecha-dev/#{app["name"]}/1.0-1/pool/main/#{app["name"].chars.first}/#{app["name"]}/#{app["name"]}_1.0-1_all.deb`
 
 end
 

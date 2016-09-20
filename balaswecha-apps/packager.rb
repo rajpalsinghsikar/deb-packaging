@@ -85,7 +85,7 @@ def generate_control(app,dependency_str)
     Build-Depends: debhelper (>= 9)
 
     Package: #{app}
-    Architecture: any
+    Architecture: all
     Depends: ${shlibs:Depends}, ${misc:Depends}, #{dependency_str}
     Description: Meta-package for all Balaswecha Applications
   FILE

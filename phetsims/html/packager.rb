@@ -106,8 +106,8 @@ def generate_control(app)
     Build-Depends: debhelper (>= 9)
 
     Package: #{app}
-    Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends}, firefox
+    Architecture: all
+    Depends: ${shlibs:Depends}, ${misc:Depends}
     Description: #{app}
   FILE
   File.write('control', contents)
@@ -130,7 +130,7 @@ end
 
 def generate_bin(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    firefox --new-window /usr/lib/balaswecha/html/#{app}_en.html 
+    x-www-browser /usr/lib/balaswecha/html/#{app}_en.html 
   FILE
   File.write(app, contents)
 end

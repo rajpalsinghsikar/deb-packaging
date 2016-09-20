@@ -104,7 +104,7 @@ def generate_control(app)
     Build-Depends: debhelper (>= 9)
 
     Package: #{app["name"]}
-    Architecture: any
+    Architecture: all
     Depends: ${shlibs:Depends}, ${misc:Depends}, default-jre
     Description: #{app["desc"]}
   FILE

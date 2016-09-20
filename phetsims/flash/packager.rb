@@ -61,10 +61,10 @@ def generate_meta_files(app, version)
     generate_compat()
     generate_copyright()
     generate_rules()
+    generate_postinst()
     generate_install(app)
     generate_format()
   end
-  puts ".. Done!"
 end
 
 def generate_copyright()
@@ -82,6 +82,16 @@ def generate_rules()
     override_dh_usrlocal:
   FILE
   File.write("rules", contents)
+end
+
+def generate_postinst()
+contents = <<-FILE.gsub(/^ {4}/, '')
+#!/usr/bin/env bash
+
+echo "$(tput setaf 1)$(tput setab 8)Browser Flash Plugin is needed to run this simulation$(tput sgr 0)"
+exit 0
+FILE
+File.write('postinst', contents)
 end
 
 def generate_format()
@@ -114,8 +124,8 @@ def generate_control(app)
     Build-Depends: debhelper (>= 9)
 
     Package: #{app}
-    Architecture: any
-    Depends: ${shlibs:Depends}, ${misc:Depends}, firefox,flashplugin-installer
+    Architecture: all
+    Depends: ${shlibs:Depends}, ${misc:Depends} 
     Description: #{app}
   FILE
   File.write('control', contents)
@@ -138,7 +148,7 @@ end
 
 def generate_bin(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    firefox --new-window /usr/lib/balaswecha/flash/#{app}_en.html 
+    x-www-browser /usr/lib/balaswecha/flash/#{app}_en.html 
   FILE
   File.write(app, contents)
 end
