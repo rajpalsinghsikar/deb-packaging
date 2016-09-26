@@ -3,10 +3,10 @@
 apply() {
   gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/backgrounds/balaswecha-dark.png"
 
-if [[ $2 = "student" ]]; then
+if [[ $1 = "student" ]]; then
     gsettings set com.canonical.Unity.Launcher favorites  "['application://physics.desktop','application://physics.desktop','application://chemistry.desktop','application://mathematics.desktop','application://english.desktop','application://social.desktop']"
   echo "Successfully applied the skin for students"
-    elif [[ $2 = "teacher" ]]; then
+    elif [[ $1 = "teacher" ]]; then
    gsettings set com.canonical.Unity.Launcher favorites  "['application://pencilbox.desktop', 'application://nautilus.desktop', 'application://chromium-browser.desktop', 'application://libreoffice-writer.desktop', 'application://libreoffice-calc.desktop', 'application://libreoffice-impress.desktop', 'application://openshot.desktop', 'application://audacity.desktop', 'application://chrome-eealagocaipaflcjmeapmobpmilffopi-Default.desktop', 'unity://running-apps', 'unity://expo-icon', 'unity://devices']"
   echo "Successfully applied the skin for teachers"
 fi
@@ -23,7 +23,7 @@ manual() {
 }
 
 if [[ $1 = "apply" ]]; then
-  apply
+  apply $2
   exit 0
 elif [[ $1 = "reset" ]]; then
   reset
