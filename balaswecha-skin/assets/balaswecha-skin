@@ -2,14 +2,21 @@
 
 apply() {
   gsettings set org.gnome.desktop.background picture-uri "file:///usr/share/backgrounds/balaswecha-dark.png"
+  if [[ $1 = "teacher" ]]; then
+    apply_teacher_skin
+  else
+    apply_student_skin
+  fi
+}
 
-if [[ $1 = "student" ]]; then
-    gsettings set com.canonical.Unity.Launcher favorites  "['application://physics.desktop','application://physics.desktop','application://chemistry.desktop','application://mathematics.desktop','application://english.desktop','application://social.desktop']"
-  echo "Successfully applied the skin for students"
-    elif [[ $1 = "teacher" ]]; then
-   gsettings set com.canonical.Unity.Launcher favorites  "['application://pencilbox.desktop', 'application://nautilus.desktop', 'application://chromium-browser.desktop', 'application://libreoffice-writer.desktop', 'application://libreoffice-calc.desktop', 'application://libreoffice-impress.desktop', 'application://openshot.desktop', 'application://audacity.desktop', 'application://chrome-eealagocaipaflcjmeapmobpmilffopi-Default.desktop', 'unity://running-apps', 'unity://expo-icon', 'unity://devices']"
+apply_teacher_skin() {
+ gsettings set com.canonical.Unity.Launcher favorites  "['application://pencilbox.desktop', 'application://nautilus.desktop', 'application://chromium-browser.desktop', 'application://libreoffice-writer.desktop', 'application://libreoffice-calc.desktop', 'application://libreoffice-impress.desktop', 'application://openshot.desktop', 'application://audacity.desktop', 'application://chrome-eealagocaipaflcjmeapmobpmilffopi-Default.desktop', 'unity://running-apps', 'unity://expo-icon', 'unity://devices']"
   echo "Successfully applied the skin for teachers"
-fi
+}
+
+apply_student_skin() {
+  gsettings set com.canonical.Unity.Launcher favorites  "['application://physics.desktop','application://physics.desktop','application://chemistry.desktop','application://mathematics.desktop','application://english.desktop','application://social.desktop']"
+  echo "Successfully applied the skin for students"
 }
 
 reset() {
@@ -19,7 +26,8 @@ reset() {
 }
 
 manual() {
-  echo -e "balaswecha-skin - apply or remove balaswecha icons and wallpaper pack\nUsage: balaswecha-skin [apply] [reset] [-h]\n\tapply - apply the pack\n\treset - reset to the OS default\n\t-h - help"
+  echo -e "balaswecha-skin - apply or remove balaswecha icons and wallpaper
+  pack\nUsage: balaswecha-skin [ apply [teacher|student] ] [reset] [-h]\n\tapply - apply the pack\n\treset - reset to the OS default\n\t-h - help"
 }
 
 if [[ $1 = "apply" ]]; then

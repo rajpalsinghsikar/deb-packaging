@@ -2,8 +2,8 @@
 Encoding=UTF-8
 Version=1.0
 Name=Social
-Exec=pencilbox
-Icon=social.png
+Exec=pencilbox --subject social
+Icon=pencilbox-social
 Terminal=false
 Type=Application
 Categories=Education;

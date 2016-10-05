@@ -75,12 +75,12 @@ def generate_install(app)
     desktop_files/maths.desktop usr/share/applications/
     desktop_files/social.desktop usr/share/applications/
 
-    icons/biology.png usr/share/icons/
-    icons/chemistry.png usr/share/icons/
-    icons/physics.png usr/share/icons/
-    icons/english.png usr/share/icons/
-    icons/maths.png usr/share/icons/
-    icons/social.png usr/share/icons/
+    icons/pencilbox-biology.png usr/share/icons/
+    icons/pencilbox-chemistry.png usr/share/icons/
+    icons/pencilbox-physics.png usr/share/icons/
+    icons/pencilbox-english.png usr/share/icons/
+    icons/pencilbox-maths.png usr/share/icons/
+    icons/pencilbox-social.png usr/share/icons/
 
     balaswecha-skin usr/bin/
   FILE

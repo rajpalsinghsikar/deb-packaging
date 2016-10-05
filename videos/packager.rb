@@ -1,25 +1,22 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+videos_meta_file = './videos.rb'
 
-video_meta_data = "../videos/videos.rb"
-require video_meta_data
+require videos_meta_file
+puts $videos
 
-def get_dependency_videos()
-  return $videos.map { |video| video["name"].split('.').first }.join(', ')
-end
 
-video = 'balaswecha-videos'
-
-def generate_meta_files(video, version, dependency_str)
-  puts "Generating Deb files ..."
+def generate_meta_files(video, version)
+  video_name = video["name"].split('.')[0]
   Dir.mkdir('debian')
   Dir.chdir('debian') do
-    generate_changelog(video)
-    generate_control(video, dependency_str)
+    generate_changelog(video_name)
+    generate_control(video_name)
     generate_compat()
     generate_copyright()
     generate_rules()
+    generate_install(video)
     generate_format()
   end
 end
@@ -51,7 +48,14 @@ def generate_format()
   end
 end
 
-def generate_control(video, dependency_str)
+def generate_install(video)
+  contents = <<-FILE.gsub(/^ {4}/, '')
+    #{video["name"]} var/lib/balaswecha/videos/#{video["subject"]}/
+  FILE
+  File.write("#{video["name"].split('.').first}.install", contents)
+end
+
+def generate_control(video)
   contents = <<-FILE.gsub(/^ {4}/, '')
     Source: #{video}
     Maintainer: Balaswecha Team<balaswecha-dev-team@thoughtworks.com>
@@ -62,15 +66,15 @@ def generate_control(video, dependency_str)
 
     Package: #{video}
     Architecture: all
-    Depends: ${shlibs:Depends}, ${misc:Depends}, #{dependency_str}
-    Description: Meta-package for all BalaSwecha video packages
+    Depends: ${shlibs:Depends}, ${misc:Depends}
+    Description: #{video}
   FILE
   File.write('control', contents)
 end
 
 def generate_changelog(video)
   contents = <<-FILE.gsub(/^ {4}/, '')
-#{video} (1.0-1) UNRELEASED; urgency=low
+    #{video} (1.0-1) UNRELEASED; urgency=low
 
       * Initial release. (Closes: #XXXXX)
 
@@ -85,18 +89,24 @@ end
 
 def generate_deb
   `debuild -i -us -uc -b`
-  puts "Done!"
 end
 
 FileUtils.rm_rf 'dist'
 Dir.mkdir('dist')
 Dir.chdir('dist') do
-  version = "1.0"
-  Dir.mkdir("#{video}-#{version}")
-  Dir.chdir("#{video}-#{version}") do
-    dependency_str = get_dependency_videos()
-    puts dependency_str
-    generate_meta_files(video, version, dependency_str)
-    generate_deb
+  $videos.each do |video|
+    video_name = video["name"].split('.')[0];
+    Dir.mkdir(video_name)
+    Dir.chdir(video_name) do
+      version = "1.0"
+      Dir.mkdir("#{video_name}-#{version}")
+      Dir.chdir("#{video_name}-#{version}") do
+        puts "Building Debian package for #{video_name}"
+        FileUtils.cp("../../../videos/#{video["subject"]}/#{video["name"]}",".") 
+        generate_meta_files(video, version)
+        generate_deb
+        puts "Done!"
+      end
+    end
   end
 end

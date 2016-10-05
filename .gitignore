@@ -4,7 +4,9 @@ phetsims/java/dist/
 phetsims/flash/dist/
 balaswecha-apps/dist/
 balaswecha-skin/dist/
-balaswecha-videos/videos/
+videos/dist/
+videos/videos/
+balaswecha-videos/dist/
 key.rb
 .idea
 *.iml
