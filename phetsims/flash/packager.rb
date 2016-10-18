@@ -148,7 +148,7 @@ end
 
 def generate_bin(app)
   contents = <<-FILE.gsub(/^ {4}/, '')
-    x-www-browser /usr/lib/balaswecha/flash/#{app}_en.html 
+    x-www-browser /usr/lib/balaswecha/html/#{app}_en.html 
   FILE
   File.write(app, contents)
 end

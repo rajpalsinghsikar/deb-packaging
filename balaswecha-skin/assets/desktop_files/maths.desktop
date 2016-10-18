@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=Mathematics
-Exec=pencilbox --subject maths
+Exec=pencilbox --subject mathematics
 Icon=pencilbox-maths
 Terminal=false
 Type=Application
